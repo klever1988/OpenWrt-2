@@ -19,31 +19,31 @@ echo
 clear
 
 rm -Rf openwrt/common openwrt/files openwrt/devices
-svn co https://github.com/garypang13/Actions-OpenWrt/trunk/devices openwrt/devices
+svn export https://github.com/garypang13/OpenWrt/trunk/devices openwrt/devices
 cd openwrt
+
+git checkout .
+git pull
 
 [ $(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/') == generic ] && {
  firmware=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/CONFIG_TARGET_(.*)_DEVICE_.*=y/\1/')
  } || { firmware=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
  }
 
-if [ $firmware == "xiaomi_redmi-router-ac2100" ]; then
-	firmware="redmi-ac2100"
-elif [ $firmware == "phicomm_k2p" ]; then
-	firmware="phicomm-k2p"
-elif [ $firmware == "x86_64" ]; then
+if [ $firmware == "x86_64" ]; then
 	firmware="x86_64"
 elif [ $firmware == "friendlyarm_nanopi-r2s" ]; then
 	firmware="nanopi-r2s"
-elif [ $firmware == "xiaoyu_xy-c5" ]; then
-	firmware="XY-C5"
-elif [ $firmware == "hiwifi_hc5962" ]; then
-	firmware="hiwifi-hc5962"
+elif [ $firmware == "friendlyarm_nanopi-r4s" ]; then
+	firmware="nanopi-r4s"
+elif [ $firmware == "rpi-4" ]; then
+	firmware="Rpi-4B"
 elif [ $firmware == "d-team_newifi-d2" ]; then
 	firmware="newifi-d2"
 else
 	echo "无法识别固件类型,请退出"
 fi
+
 echo
 
 read -p "请输入后台地址 [回车默认10.0.0.1]: " ip
@@ -53,8 +53,6 @@ echo "您的后台地址为: $ip"
 rm -Rf feeds package/feeds common files diy tmp
 make clean
 [ -f ".config" ] && mv .config .config.bak
-git fetch --all
-git reset --hard origin/master
 cp -rf devices/common/* ./
 cp -rf devices/$firmware/* ./
 ./scripts/feeds update -a
@@ -69,17 +67,17 @@ if [ -f "devices/$firmware/diy.sh" ]; then
 fi
 if [ -f "devices/common/default-settings" ]; then
 	sed -i 's/10.0.0.1/$ip/' devices/common/default-settings
-	cp -f devices/common/default-settings package/*/*/default-settings/root/etc/uci-defaults/99-default-settings
+	cp -f devices/common/default-settings package/*/*/default-settings/files/uci.defaults
 fi
 if [ -f "devices/$firmware/default-settings" ]; then
 	sed -i 's/10.0.0.1/$ip/' devices/$firmware/default-settings
-	cat devices/$firmware/default-settings >> package/*/*/default-settings/root/etc/uci-defaults/99-default-settings
+	cat devices/$firmware/default-settings >> package/*/*/default-settings/files/uci.defaults
 fi
 if [ -n "$(ls -A "devices/common/patches" 2>/dev/null)" ]; then
-          find "devices/common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
+          find "devices/common/patches" -type f -name '*.patch' ! -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
 fi
 if [ -n "$(ls -A "devices/$firmware/patches" 2>/dev/null)" ]; then
-          find "devices/$firmware/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
+          find "devices/$firmware/patches" -type f -name '*.patch' ! -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
 fi
 [ -f ".config.bak" ] && cp -f .config.bak .config || {
 cp -f devices/common/.config .config
@@ -111,7 +109,9 @@ echo "                      *****5秒后开始编译*****
 3.大陆用户编译前请准备好梯子,使用大陆白名单或全局模式"
 echo
 echo
-sleep 5s
+sleep 3s
+
+sed -i 's,$(STAGING_DIR_HOST)/bin/upx,upx,' package/feeds/custom/*/Makefile
 
 make -j$(($(nproc)+1)) download v=s ; make -j$(($(nproc)+1)) || make -j1 V=s
 

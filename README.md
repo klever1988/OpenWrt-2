@@ -2,19 +2,19 @@
 [1]: https://img.shields.io/badge/license-GPLV2-brightgreen.svg
 [2]: /LICENSE
 [3]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg
-[4]: https://github.com/garypang13/Actions-OpenWrt/pulls
+[4]: https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi/pulls
 [5]: https://img.shields.io/badge/Issues-welcome-brightgreen.svg
-[6]: https://github.com/garypang13/Actions-OpenWrt/issues/new
+[6]: https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi/issues/new
 [7]: https://img.shields.io/github/v/release/hyird/Action-Openwrt
-[8]: https://github.com/garypang13/Actions-OpenWrt/releases
+[8]: https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi/releases
 [10]: https://img.shields.io/badge/Contact-telegram-blue
 [11]: https://t.me/opwrts
-[12]: https://github.com/garypang13/Actions-OpenWrt/workflows/Openwrt-AutoBuild/badge.svg
-[13]: https://github.com/garypang13/Actions-OpenWrt/actions
+[12]: https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi/actions/workflows/Openwrt-AutoBuild.yml/badge.svg
+[13]: https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi/actions
 
 [![license][1]][2]
-[![GitHub Stars](https://img.shields.io/github/stars/garypang13/Actions-OpenWrt.svg?style=flat-square&label=Stars)](https://github.com/garypang13/Actions-OpenWrt-Nginx/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/garypang13/Actions-OpenWrt.svg?style=flat-square&label=Forks)](https://github.com/garypang13/Actions-OpenWrt-Nginx/fork)
+[![GitHub Stars](https://img.shields.io/github/stars/garypang13/OpenWrt_x86-r2s-r4s-Rpi.svg?style=flat-square&label=Stars)](https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi-Nginx/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/garypang13/OpenWrt_x86-r2s-r4s-Rpi.svg?style=flat-square&label=Forks)](https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi-Nginx/fork)
 [![PRs Welcome][3]][4]
 [![Issue Welcome][5]][6]
 [![AutoBuild][12]][13]
@@ -22,7 +22,7 @@
 <a href="https://t.me/opwrts" target="_blank">Telegram</a>
 ### 特色:
 
-+ Cutting edge,openwrt官方master分支版本,luci19.07 内核升级到5.4. 与官方最新源码同步.
++ Cutting edge,openwrt官方openwrt-21.02分支版本, 内核升级到5.10. 与官方最新源码同步.
 
 + 原生极致纯净,固件默认只包含基础上网功能,后台在线选装插件,自建插件仓库囊括了市面上主流开源插件,系统升级不丢失插件和配置.
 
@@ -41,16 +41,10 @@
 
 | 设备           | 固件下载                                             | 说明                                 |
 |----------------|-----------------------------------------------------|--------------------------------------|
-| X86_64         | [📥](https://op.supes.top/firmware/x86_64/)         | 请分配不少于1G的存储空间           |
-| Redmi-AC2100 (红米AC2100)   | [📥](https://op.supes.top/firmware/redmi-ac2100/)   | 在breed中需要先刷底包                |
-| Phicomm-K2P (斐讯K2P)    | [📥](https://op.supes.top/firmware/phicomm-k2p/)    | 闪存布局请使用默认的公版     |
-| K2P-32M-USB (K2P 32M USB版)   | [📥](https://op.supes.top/firmware/k2p-32m-usb/)    | 闪存布局请使用默认的公版     |
-| NanoPi-R2S    | [📥](https://op.supes.top/firmware/nanopi-r2s/)     | 默认交换了网口,靠近电源口的是WAN口   |
-| NanoPi-R4S    | [📥](https://op.supes.top/firmware/nanopi-r4s/)     |    |
-| Newifi-D2 (新路由3)      | [📥](https://op.supes.top/firmware/newifi-d2/)      |                                      |
-| Hiwifi-HC5962 (极路由4增强版)  | [📥](https://op.supes.top/firmware/hiwifi-hc5962/)  |                                      |
-| Xiaomi-R3P (小米路由PRO)    | [📥](https://op.supes.top/firmware/xiaomi-r3p/)     |                                      |
-| XY-C5 (小娱-C5)         | [📥](https://op.supes.top/firmware/XY-C5/)          |                                      |
+| X86_64         | [📥](https://op.supes.top/firmware/x86_64/)         | 请分配不少于1G的存储空间           |   |
+| NanoPi-R2S    | [📥](https://op.supes.top/firmware/nanopi-r2s/)     | 默认交换了网口,靠近电源口的是WAN口   |         |
+| NanoPi-R4S    | [📥](https://op.supes.top/firmware/nanopi-r4s/)     |             |
+| Raspberry Pi 4B (树莓派4B)| [📥](https://op.supes.top/firmware/Rpi-4B/)         |   
 
 
 后台入口 10.0.0.1 &nbsp;(若后台无法打开,请插拔交换wan,lan网线顺序.)
@@ -61,7 +55,7 @@
 
 云编译需要 [在此](https://github.com/settings/tokens) 创建个token,然后在此仓库Settings->Secrets中添加个名字为REPO_TOKEN的Secret,填入token值,否者无法触发编译
 
-在仓库Settings->Secrets中分别添加 PPPOE_USERNAME, PPPOE_PASSWD 可设置默认拨号账号密码.有 [安全隐患](https://github.com/garypang13/Actions-OpenWrt/issues/23)
+在仓库Settings->Secrets中分别添加 PPPOE_USERNAME, PPPOE_PASSWD 可设置默认拨号账号密码.有 [安全隐患](https://github.com/garypang13/OpenWrt_x86-r2s-r4s-Rpi/issues/23)
 
 Secrets中添加 SCKEY 可通过[Server酱](http://sc.ftqq.com) 推送编译结果到微信
 
@@ -75,8 +69,8 @@ diy云编译教程: [Read the details in my blog (in Chinese) | 中文教程](ht
 ### 默认插件包含:
 
 + Opkg 软件包管理
-+ SSR-PLUS
-+ Adblock 基于DNS的广告过滤
++ Bypass 智能过墙
++ DNSfilter 基于DNS的广告过滤
 + UPNP 自动端口转发
 + Turbo ACC 网络加速
 
@@ -99,13 +93,13 @@ diy云编译教程: [Read the details in my blog (in Chinese) | 中文教程](ht
  首次编译:
 ```
 screen -S openwrt
-wget -O compile.sh https://raw.githubusercontent.com/garypang13/Actions-OpenWrt/master/onekey/compile.sh && bash compile.sh
+wget -O compile.sh https://raw.githubusercontent.com/garypang13/OpenWrt/master/onekey/compile.sh && bash compile.sh
 ```
 
  二次编译:
 ```
 screen -S openwrt
-wget -O recompile.sh https://raw.githubusercontent.com/garypang13/Actions-OpenWrt/master/onekey/recompile.sh && bash recompile.sh
+wget -O recompile.sh https://raw.githubusercontent.com/garypang13/OpenWrt/master/onekey/recompile.sh && bash recompile.sh
 ```
 
 Build OpenWrt using GitHub Actions
@@ -113,7 +107,7 @@ Build OpenWrt using GitHub Actions
 ### Usage
 
 - Sign up for [GitHub Actions](https://github.com/features/actions/signup)
-- Fork [this GitHub repository](https://github.com/garypang13/Actions-OpenWrt-Nginx)
+- Fork [this GitHub repository](https://github.com/garypang13/OpenWrt)
 - click the `Star` button, and the build will starts automatically.Progress can be viewed on the Actions page.
 - When the build is complete, click the `Artifacts` button in the upper right corner of the Actions page to download the binaries.
 
@@ -122,7 +116,7 @@ Build OpenWrt using GitHub Actions
 - [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)
 - [CTCGFW's Team](https://github.com/immortalwrt/immortalwrt)
 - [Lienol](https://github.com/Lienol/openwrt)
-- [P3TERX](https://github.com/P3TERX/Actions-OpenWrt/blob/master/LICENSE)
+- [P3TERX](https://github.com/P3TERX/OpenWrt_x86-r2s-r4s-Rpi/blob/master/LICENSE)
 - [upload-release-action](https://github.com/svenstaro/upload-release-action)
 - [Microsoft](https://www.microsoft.com)
 - [Microsoft Azure](https://azure.microsoft.com)

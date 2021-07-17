@@ -8,7 +8,7 @@ sleep 2s
 sudo apt-get update
 sudo apt-get upgrade
 
-sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler ccache xsltproc rename antlr3 gperf curl screen
+sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler ccache xsltproc rename antlr3 gperf curl screen upx
 
 
 
@@ -40,28 +40,18 @@ fi
 
 
 rm -Rf openwrt
-git clone -b master --depth 1 https://github.com/openwrt/openwrt
-svn co https://github.com/garypang13/Actions-OpenWrt/trunk/devices openwrt/devices
-cd openwrt
+
 echo "
 
 1. X86_64
 
-2. K2p
+2. r2s
 
-3. RedMi_AC2100
+3. r4s
 
-4. r2s
+4. Rpi-4B
 
-5. newifi-d2
-
-6. hiwifi-hc5962
-
-7. XY-C5
-
-8. phicomm-N1
-
-9. Exit
+5. Exit
 
 "
 
@@ -75,39 +65,37 @@ case $CHOOSE in
 	break
 	;;
 	2)
-		firmware="phicomm-k2p"
-	break
-	;;
-	3)
-		firmware="redmi-ac2100"
-	break
-	;;
-	4)
 		firmware="nanopi-r2s"
 	break
 	;;
-	5)
-		firmware="newifi-d2"
+	3)
+		firmware="nanopi-r4s"
 	break
 	;;
-	6)
-		firmware="hiwifi-hc5962"
+	4)
+		firmware="Rpi-4B"
 	break
 	;;
-	7)
-		firmware="XY-C5"
-	break
-	;;
-	8)
-		firmware="phicomm-N1"
-		make menuconfig
-	break
-	;;
-	9)	exit 0
+	5)	exit 0
 	;;
 
 esac
 done
+
+
+
+git clone -b openwrt-21.02 --depth 1 https://github.com/openwrt/openwrt
+svn export https://github.com/garypang13/OpenWrt/trunk/devices openwrt/devices
+
+cd openwrt
+
+if [[ $firmware == "x86_64" ]]; then
+		wget -cO sdk.tar.xz https://mirrors.cloud.tencent.com/openwrt/releases/21.02-SNAPSHOT/targets/x86/64/openwrt-sdk-21.02-SNAPSHOT-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+elif [[ $firmware =~ (nanopi-r2s|nanopi-r4s) ]]; then
+		wget -cO sdk.tar.xz https://mirrors.cloud.tencent.com/openwrt/releases/21.02-SNAPSHOT/targets/rockchip/armv8/openwrt-sdk-21.02-SNAPSHOT-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+elif [[ $firmware == "Rpi-4B" ]]; then
+		wget -cO sdk.tar.xz https://mirrors.cloud.tencent.com/openwrt/releases/21.02-SNAPSHOT/targets/bcm27xx/bcm2711/openwrt-sdk-21.02-SNAPSHOT-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+fi
 
 
 read -p "请输入后台地址 [回车默认10.0.0.1]: " ip
@@ -126,18 +114,18 @@ if [ -f "devices/$firmware/diy.sh" ]; then
 		/bin/bash "devices/$firmware/diy.sh"
 fi
 if [ -f "devices/common/default-settings" ]; then
-	sed -i 's/10.0.0.1/$ip/' devices/common/default-settings
-	cp -f devices/common/default-settings package/*/*/default-settings/root/etc/uci-defaults/99-default-settings
+	sed -i "s/10.0.0.1/$ip/" devices/common/default-settings
+	cp -f devices/common/default-settings package/*/*/default-settings/files/uci.defaults
 fi
 if [ -f "devices/$firmware/default-settings" ]; then
-	sed -i 's/10.0.0.1/$ip/' devices/$firmware/default-settings
-	cat -f devices/$firmware/default-settings >> package/*/*/default-settings/root/etc/uci-defaults/99-default-settings
+	sed -i "s/10.0.0.1/$ip/" devices/$firmware/default-settings
+	cat devices/$firmware/default-settings >> package/*/*/default-settings/files/uci.defaults
 fi
 if [ -n "$(ls -A "devices/common/patches" 2>/dev/null)" ]; then
-          find "devices/common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
+          find "devices/common/patches" -type f -name '*.patch' ! -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
 fi
 if [ -n "$(ls -A "devices/$firmware/patches" 2>/dev/null)" ]; then
-          find "devices/$firmware/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
+          find "devices/$firmware/patches" -type f -name '*.patch' ! -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
 fi
 cp devices/common/.config .config
 echo >> .config
@@ -154,9 +142,10 @@ echo "                      *****5秒后开始编译*****
 echo
 echo
 echo
-sleep 5s
+sleep 3s
 
-make -j$(($(nproc)+1)) download v=s ; make -j$(($(nproc)+1)) || make -j1 V=s
+make -j$(($(nproc)+1)) download -j$(($(nproc)+1)) &
+make -j$(($(nproc)+1)) || make -j1 V=s
 
 if [ "$?" == "0" ]; then
 echo "
